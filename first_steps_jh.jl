@@ -47,6 +47,7 @@ println("x ÷ y = ",x ÷ y) #truncate to an integer
 println("x % y = ",x % y) #modulo operator - returns the reminder of a division 
 
 # 5. Conditional evaluation: In Julia, conditional expressions can be written using the if-elseif-else-end syntax
+#every "if" has to have its own "end"
 
 x = 5
 y = 1
