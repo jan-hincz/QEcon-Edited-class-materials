@@ -1,4 +1,20 @@
-using Plots
+##ctrl+enter to run a line of code
+
+##alt+j alt+o to open Julia REPL terminal
+##cd("path") := change directory, follow syntax from pwd() := print working directory (you can also look up whether you are in a good folder)
+
+##Julia Package Manager
+#"]" to open Julia package manager; CHECK IT EVERY DAY: blue package manager should be named after the current folder (working in local environment)
+#if not, remember to activate your local environment ["activate ."] in the current directory and, if needed, add the package Plots ["add Plots"]
+#if you want to clone a repo and download all its required packages, use "instantiate" command
+# "status" shows environment dependencies and packages of a project
+#"remove XYZ" to remove XYZ package from the environment
+#"help" gives all the commands with short description
+# backspace to come back from Julia package manager to Julia REPL terminal
+
+##If some code is in the function you can always take it out of the function, test it for yourself!
+
+using Plots #necessary to use an external package
 
 # 1.Defining variables: a variable is a name that is bound to a value
 x = 1
