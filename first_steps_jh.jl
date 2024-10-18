@@ -305,7 +305,7 @@ my_mean(2)
 ####################################################################################### 
 
 
-my_sum = 0
+my_sum = 0 #we initialize the sum
 for i in 1:5
     my_sum = my_sum + i
     println("sum: ", my_sum)
@@ -388,6 +388,39 @@ typeof(mat) == Array{Float64, 2}
 ####################################################################################### 
 
 
+mat = Matrix{Float64}(undef, 3,4) 
+
+for n in 1:3
+    for m in 1:4
+        mat[n,m] = n*m
+        println(n," * ",m," = ", n*m)
+    end
+    
+end
+
+
+
+
+
+
+function multiplication_tab(n)
+    mat4 = Matrix{Float64}(undef, n,n) 
+    for i in 1:n
+        for j in 1:n
+            mat4[i,j] = i*j
+        end
+    end
+    return mat4
+end
+
+
+multiplication_tab(5)
+
+
+
+
+
+
 # Broadcasting
 # In Julia, definitions of functions follow the rules of mathematics
 x = [1 2 3]
@@ -423,17 +456,17 @@ end
 # using map 
 map(*, x, y)  # The passed function (*, in this case) is applied iteratively elementwise to those collections until one of them is exhausted
 
-# Broadcasting Functions:
+# Broadcasting Functions: [I want to apply a function to a vector] - slide 2 of new set
 times_two(x) = 2 * x
 times_two(5)
-times_two.(y)
+times_two.(y) #dot to get a function for each element of a vector (y = [1,2,3])
 # those can be built-in functions
 log.(y)
 
 # or using map function
 map(x -> 2*x, y)
 
-# Expanding length-1 dimensions in broadcasting
+# Expanding length-1 dimensions in broadcasting - slide 3 of new slides
 
 # There is one exception to the rule that dimensions of all collections taking part in
 # broadcasting must match. This exception states that single-element dimensions get
@@ -445,14 +478,16 @@ map(x -> 2*x, y)
 
 
 
-mat_ones = ones(3,3)
-vec_horizontal = [0.0 1.0 2.0]
-mat_ones .+ vec_horizontal
+mat_ones = ones(3,3) #slide 4: matrix vs vector
+vec_horizontal = [0.0 1.0 2.0] #1 row
+mat_ones .+ vec_horizontal # dot allows it once again
 
-vec_vertical = [0.0, 1.0, 2.0]
+vec_vertical = [0.0, 1.0, 2.0] #1 column
 mat_ones .+ vec_vertical
 
 vec_vertical .+ vec_horizontal
+
+#slide 5 - via analogous multiplication you can get multiplication table
 
 #############################        CONCEPT CHECK:         ############################# 
 # Multiplication table returns!
@@ -467,6 +502,14 @@ vec_vertical .+ vec_horizontal
 # 2. Use vector operations (transpose) & broadcasting to get the multiplication table. Do not use any loops.
 ####################################################################################### 
 
+ #transpose
+
+ function multi_table(n)
+    vec_vertical = collect(1:n)
+    return vec_vertical .* vec_vertical'
+end
+
+multi_table(4)
 
 # Conditional extraction
 a = [10, 20, 30]
