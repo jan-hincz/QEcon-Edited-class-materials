@@ -1,3 +1,5 @@
+#line 159 ???
+
 ##ctrl+enter to run a line of code
 
 ##alt+j alt+o to open Julia REPL terminal
@@ -14,65 +16,75 @@
 
 ##If some code is in the function you can always take it out of the function, test it for yourself!
 
+
 using Plots #necessary to use an external package
 
 # 1.Defining variables: a variable is a name that is bound to a value
 x = 1
-y = [1, 2, 3]
+y = [1, 2, 3] #rows separated by , -> so this is a 3x1 column vector
 println("y: ",y)
 
+
 # 2. Beware! Binding vs. copying values. "=" performs only binding of values to variables
-z       = y 
-z[2]    = 3
-z
-y
+z       = y #we define z by y (NOT VICE VERSA), now z and y are the same vectors [1,2,3] and changes to either z or y, apply to both!
+z[2]    = 3 #now 2nd element of z is 3, and because we coded z = y above, z = y = [1,3,3] (works both ways)
+z # [1,3,3]
+y # [1,3,3]
+
 
 y       = [1, 2, 3]
-z       = copy(y)
+z       = copy(y) #changes applied to z won't apply to y anymore
 z[2]    = 3
-z
-y
-z = similar(y)
+z # [1,3,3] as before
+y #intact: [1,2,3]
+z = similar(y) #y = [1,2,3] is a 3x1 column vector with only integers {Int64}, so z will also be a 3x1 column vector with random integers
 # 3. Types: The value 64 in Int64 implies that it take up 64 bits of memory
-typeof(1)
-typeof(true)
-typeof("Hello world!")
-typeof(0.1)
-# 3. Types: Vectors are arrays with parameters referring to (1) type of elements 
-# that array can store (2) The dimensions of an array
-typeof([1.0, 2.0, 3.0])
-typeof(y)
+typeof(1) #Int64
+typeof(true) #Bool
+typeof("Hello world!") #String
+typeof(0.1) #Float64
 
-# 3. Types: Julia is a dynamically typed language, so it does not need to know the types bound to variables during compile time
+
+# 3a. Types: Vectors are 1-dimensional arrays with parameters referring to the type of elements
+#Matrices are 2-dimensional arrays with parameters referring to the type of elements
+# arrays store the dimensions of an array
+typeof([1.0, 2.0, 3.0]) #Vector (1-dim) with floats
+typeof(y) #y = [1,2,3] : Vector (1-dim) with integers
+typeof([1.0 2.0 3.0; 2.0 3.0 4.0]) #2x3 matrix (2-dim) with Floats
+[1.0 2.0 3.0; 2.0 3.0 4.0]
+
+# 3b. Types: Julia is a dynamically typed language, so it does not need to know the types bound to variables during compile time
 #    NOTE:  It is possible, though not recommended to bind values of different types to the same variable name!
-typeof(x)
+typeof(x) #x = 1 -> Int
 x = 1.0
-typeof(x)
+typeof(x) #float
 
 
 # 4. arithmetic operations
-x = 10
+x = 5
 y = 3
 
+x+y
 println("x + y = ",x + y)
 println("x - y = ",x - y)
 println("x * y = ",x * y)
-println("x / y = ",x / y)
-println("x ^ y = ",x ^ y)
-println("x ÷ y = ",x ÷ y) #truncate to an integer
-println("x % y = ",x % y) #modulo operator - returns the reminder of a division 
+println("x / y = ",x / y) #this is how standard division is done
+println("x ^ y = ",x ^ y) #5^3 = 125
+println("x ÷ y = ",x ÷ y) #truncate to an integer: x/y = 5/3 = 1.666 -> 1 IMPORTANT: YOU CAN COPY THIS SIGN FROM HERE
+println("x % y = ",x % y) #modulo operator - returns the reminder of a division 5/3 -> 5 = 1*3 + 2 -> modulo is 2
+
 
 # 5. Conditional evaluation: In Julia, conditional expressions can be written using the if-elseif-else-end syntax
 #every "if" has to have its own "end"
 
 x = 5
 y = 1
-if x % y == 0
+if x % y == 0 # ==, not = when a logical statement
     println("no reminder")
 elseif  x % y > 0
     println("some reminder")
 else
-    println("unexpected condition")
+    println("unexpected condition") #modulo is > 0 for x,y > 0, so that would indicate a bug
 end
 
 if x > 0
@@ -81,7 +93,7 @@ else
     sqrt(-x)
 end
 
-
+#1 line syntax for if-else-end
 x % y==0 ? println("no reminder") : println("some reminder")
 x > 0 ? sqrt(x) : sqrt(-x)
 
@@ -93,52 +105,61 @@ else
     println("Positive, but not large x: ", x)
 end
 
+
 # 5. Boolean operators: 
-typeof(!(x==4))
-typeof(true)
+typeof(!(x==4)) #Bool : logical statement: x not equal to 4
+typeof(true) #Bool
 x = 4
-!(x==4)
+!(x==4) #false, because x equals 4
 x = 3
-!(x==4)
-x > 0 && x < 10 ## conjunction
-0<x<10 ##this and above statements are the same
-x < 0 || x > 10 ##alternative
+!(x==4) #true
+x > 0 && x < 10 #conjunction (intersection), 3 = x e (0,10), so true
+0<x<10 ##this and the above statement are the same; true
+x < 0 || x > 10 ##alternative; false
+
 
 #############################        CONCEPT CHECK:         ############################# 
 # a. Make two variables, var_a and var_b. Put any numeric types in these variables.
 # b. Print out "It is easy!" if var_a is greater than 1 and var_b is NOT less than 2. Do it using nested if conditions
 # c. Now write only one if condition, use boolean operators.
 ####################################################################################### 
-
+#a.
 var_a = 21
 var_b = 37
 
+#.b
 if var_a > 1
     if var_b >= 2
         println("It is easy!")
     end
 end
 
-
-
+#c.
 if var_a > 1 && !(var_b < 2)
     println("It is easy!")
 end
 
 # Julia evaluates only as many conditions (starting from the leftmost) as are needed to determine the logical value of the whole expression
 x = -7
-# the first condition x < 0 is true, so Julia never checks the second condition
+# the first condition x < 0 is true, so Julia never checks the second condition (because after || it knows the alternative is true)
 x < 0 || log(x) > 10
 x = 3
 #the second part of the expression does not have to produce a Bool value
-iseven(x) || println("x is odd")
+iseven(x) || println("x is odd") #3 is not even, so it checks and does the second part (which is not a logical statement)
+iseven(x) || !iseven(x) #both are logical statements -> Bool is given (true)
+
 if !iseven(x)
     println("x is odd")
 end
 
-isdir("some_folders") || mkpath("some_folders")
+x = 4
+iseven(x) || println("x is odd") #first part fulfills the alternative -> shows true
 
-#using an expression that does not produce a Bool value in a normal if condition is not allowed 
+
+isdir("some_folders") || mkpath("some_folders") #"some folders" I DON'T KNOW WHAT'S THAT ???
+
+#using an expression that does not produce a Bool value in a normal if-end condition is not allowed -> POSSIBLE ERROR 
+#x = 3
 #if iseven(x) || println("x is odd")
 #    println("It either works or not...")
 #end
