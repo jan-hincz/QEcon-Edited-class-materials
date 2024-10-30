@@ -328,7 +328,7 @@ end
 i = 1
 while i <= 5 
     println(i)    
-end #just 1, because there is no adding to i
+end #just 1 produced indefinitely, because there is no adding to i
 
 
 #############################         CONCEPT CHECK:           ############################# 
