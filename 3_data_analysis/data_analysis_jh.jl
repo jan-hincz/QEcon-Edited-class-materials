@@ -156,7 +156,7 @@ plot_1 = scatter(x, y; label="Our data", color=:blue, markersize = 5) #real data
 #This will work only if you have defined (called) β0 and β1 (thus fit_regression function!!)
 plot!(x,β0.+β1.*x; label="Fitted line: y=$(round(β0,digits=2))+$(round(β1,digits=2))x",linewidth=4) #adding the OLS-fitted line
 #x and fitted y as axes; investigate the legend; ! -> it will combine the plot with a former scatterplot
-xaxis!(plot_1, "x")
-yaxis!(plot_1, "y")
-title!(plot_1, "Scatter plot of data_1 with fitted line")
-savefig(plot_1, "3_data_analysis//simple OLS regression plot.pdf")
+xaxis!("x")
+yaxis!("y")
+title!("Scatter plot of data_1 with fitted line")
+savefig("3_data_analysis//simple OLS regression plot.pdf")
