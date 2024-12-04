@@ -1,4 +1,13 @@
-# Examples from/based on Fundamentals of Numerical Computation, Julia Edition. Tobin A. Driscoll and Richard J. Braun
+# ] Examples from/based on Fundamentals of Numerical Computation, Julia Edition. Tobin A. Driscoll and Richard J. Braun
+
+TAKEAWAYS
+#by representing numbers as floats with rounding errors order of operations might matter
+#Float64 has 15 or 16 digits of precision
+# Float64 are not equally spaced!!!
+# condition number = 10^k means you lose k digits of precision
+#you should use packages first and your own functions second, because the packages were created to avoid problems (e.g. of ill condition)
+#make sure Julia can handle the magnitude the numbers (machine epsilon, floatmax(), floatmin() etc.)
+
 
 using PrettyTables, Plots, LaTeXStrings #for part 2 only (around line XXX)
 
@@ -7,160 +16,163 @@ x_int  =  1
 x_float  = 1.0
 
 # use typeof to check the type of a variable
-typeof(x_int)
-typeof(x_float)
-
-
+typeof(x_int) #Int64
+typeof(x_float) #Float64
 
 # convert integer to float
-x_int_float = Float64(x_int)
-typeof(x_int_float)
+x_int_float = Float64(x_int) #1.0
+typeof(x_int_float) #Float64
 
-# can we convert back? 
-x_float_int = Int64(x_float)
-typeof(x_float_int)
+#we can convert back
+x_float_int = Int64(x_float) #1
+typeof(x_float_int) #Int64
 
-x_float_int2 = Int64(1.02)
-typeof(x_float_int2)
-
+x_float_int2 = Int64(1.02) #Error
+typeof(x_float_int2) #Error
 
 # representation of a number 
-bitstring(1.0)
-bitstring(-1.0)
+bitstring(1.0) #0011111111110000000000000000000000000000000000000000000000000000
+bitstring(-1.0) #like above, just 1 at the beginning - the sign bit
 x = 3.0
-@show sign(x),exponent(x),significand(x);
+@show sign(x),exponent(x),significand(x) #3 = 1.0 * 2^1 * 1.5 
 x = -3.0
-@show sign(x),exponent(x),significand(x);
+@show sign(x),exponent(x),significand(x); #3 = 1.0 * 2^1 * -1.5
 
-big_numer = 100000000000000000000000000000000000000000000.0
-typeof(big_numer)
+big_numer = 100000000000000000000000000000000000000000000.0 #1.0e44 = 1.0 * 10^44
+typeof(big_numer) #Float64
 
 bitstring(big_numer)
-bitstring(big_numer + 1.0)
-
-
+bitstring(big_numer + 1.0) #Float64 has 15 or 16 digits of precision
+#big number and big number + 1 both with over 40 digits will be represented the same
 
 
 # define type of variable 
 x_fl32::Float32 = 1.0
-typeof(x_fl32)
+typeof(x_fl32) #Float32 - single precision
 x_myint::Int64 = 1.0
-typeof(x_myint)
-# machine epsilon 
-eps(Float64)
+typeof(x_myint) #Float64
 
-# are Float64 equally spaced? 
-eps(1.0)
-eps(1000000000.0)
+# machine epsilon - slide 17 
+eps(Float64) #2.220446049250313e-16
 
-nextfloat(1.0)
-nextfloat(1000000000.0)
+# Float64 are not equally spaced!!!
 
+eps(1.0) #2.220446049250313e-16
+eps(1000000000.0) #1.1920928955078125e-7
+nextfloat(1.0) #1.0000000000000002
+nextfloat(1000000000.0) #1.0000000000000001e9
 
 
 # what is there between 1.0 and nextfloat(1.0)
-@show (nextfloat(1.0) - 1.0)/2
+@show (nextfloat(1.0) - 1.0)/2 #1.1102230246251565e-16
+@show eps()/2 #1.1102230246251565e-16
 
-@show eps()/2
+@show 1.0 + eps()/2 #1.0!!!!!!!
 
-@show 1.0 + eps()/2
+@show (1.0 + eps()/2) - 1.0 #0.0!!!!!!!
+# beware! the result is off by eps()/2 --- which is the exact value itself
 
-@show (1.0 + eps()/2) - 1.0
+@show 1.0 + (eps()/2 - 1.0) #1.1102230246251565e-16!!!!
+#this time ok, even though it's the same equ as above!
 
-@show 1.0 + (eps()/2 - 1.0) 
-
-# beware! the result is off by eps()/2 --- which is the exact value  itself
-
+#TAKEAWAY
+#by representing numbers as floats with rounding errors order of operations might matter
 
 
-# smallest and largest floating point number
-@show floatmin(),floatmax();
 
-nextfloat(floatmax())
-nextfloat(-Inf)
+# smallest and largest positive floating point numbers
+@show floatmin(),floatmax(); #(2.2250738585072014e-308, 1.7976931348623157e308)
 
+nextfloat(floatmax()) #Inf
+nextfloat(-Inf) #-1.7976931348623157e308 = - max positive number
+
+
+#################################################### NOT IMPORTANT ####################################
 # a mystery...
-a::Float16 = 0.1
-b::Float16 = 0.2
-c::Float16 = 0.3 
+f::Float16 = 0.1
+g::Float16 = 0.2
+h::Float16 = 0.3 
 
-result_1 = a + b + c
-result_2 = c + b + a
-@assert result_1 == result_2
-
-
+result_1 = f + g + h #Float16(0.5996)
+result_2 = h + g + f #Float16(0.6)
+@assert result_1 == result_2 #Error
+#################################################### NOT IMPORTANT ####################################
 
 
 ### QUADRATIC EQUATION EXAMPLE
-ϵ = 1e-6   
-ax,bx,cx = 1/3, (-2-ϵ)/3, (1+ϵ)/3  
+ϵ = 1e-6
+ax,bx,cx = 1/3, (-2-ϵ)/3, (1+ϵ)/3 #a,b,c of a quadratic function
 
-dx = sqrt(bx^2-4ax*cx)
-r1 = (-bx-dx)/(2ax)  
-r2 = (-bx+dx)/(2ax)
+dx = sqrt(bx^2-4ax*cx) #delta
+r1 = (-bx-dx)/(2ax) #root 1
+r2 = (-bx+dx)/(2ax) #root 2
 (r1,r2)
 
 # what is the true r2? 
-abs_error = abs(r2 - (1.0 + ϵ))
-rel_error = abs_error / (1.0 + ϵ)
+abs_error = abs(r2 - (1.0 + ϵ)) #1.7485035641584545e-10
+rel_error = abs_error / (1.0 + ϵ) #1.748501815656639e-10
 
 
-
-### STABILITY
+### STABILITY - quadratic equation example - slide 28
 a = 1.0
 b = - (10^6 + 10^(-6))
 c = 1.0 
 
 # what are the true roots?
-r1_true = 10^(-6)
-r2_true = 10^6
+r1_true = 10^(-6) #smaller root
+r2_true = 10^6 #greater root
 
 # use quadratic formula to compute the roots
-d = sqrt(b^2-4a*c)
-r1 = (-b-d)/(2a)
-r2 = (-b+d)/(2a)
+d = sqrt(b^2-4a*c) #999999.999999
+r1 = (-b-d)/(2a) #1.00000761449337e-6 - close to r1_true
+r2 = (-b+d)/(2a) #1.0e6 = same as r2_true, good!
+
+# what are the errors? - see slide 19
+abs_error_r1 = abs(r1 - r1_true) #7.614493370101404e-12
+rel_error_r1 = abs_error_r1 / r1_true #7.614493370101404e-6
 
 
-# what are the errors?
-abs_error_r1 = abs(r1 - r1_true)
-rel_error_r1 = abs_error_r1 / r1_true
 
-# condition number? 
+# CONDITION NUMBERS - notes after slide 28 (quadratic roots example)
+#recall: condition number = 10^k means you lose k digits of precision
+#SHOWCASING PROBLEM (HERE, WITH SMALLER ROOT X2)
 
-step1 = b^2 #see slides 
-cond_step_1 = abs( b * (2*b) / step1) #2.0 is not much for a condition number = good
+step1 = b^2 
+cond_step_1 = abs( b * (2*b) / step1) #2.0 is small for a condition number = good
 
 step2 = step1 - 4*a*c
-cond_step_2 = abs(  1.0 * step1  / step2) #1.00004 is fine for a condition number
+cond_step_2 = abs(  1.0 * step1  / step2) #1.000000000004: small = good
 
 step3 = sqrt(step2)
-cond_step_3 = abs( 0.5 * step2 ^ (-0.5) * step2 / step3) #0.5 no problem
+cond_step_3 = abs( 0.5 * step2 ^ (-0.5) * step2 / step3) #0.5: small = good
 
 step4 = -b + step3 #calculating greater root (before dividing by 2a)
-cond_step_4 = abs( -1.0 * step3 / step4) #0.5 fine
+cond_step_4 = abs( -1.0 * step3 / step4) #0.5: small = good
 
 step5 = step4 / (2*a)
-cond_step_5 = abs( 1.0 / (2*a) * step4 / step5) #1.0 good
+cond_step_5 = abs( 1.0 / (2*a) * step4 / step5) #1.0: small = good
 
-cond_good_root = cond_step_1 * cond_step_2 * cond_step_3 * cond_step_4 * cond_step_5 #overall condition number
+cond_good_root = cond_step_1 * cond_step_2 * cond_step_3 * cond_step_4 * cond_step_5 #overall condition number = 0.5: SMALL = GOOD
 
-# what happens if we use the other root?
+# what happens if we use the other smaller root x2?
 
 #hitherto steps with equivalent condition numbers as the other root
 step4 = -b - step3
-cond_step_4 = abs( -1.0 * step3 / step4) #very big number, NOT GOOD
+cond_step_4 = abs( -1.0 * step3 / step4) #4.99996192781805e11: very big number = NOT GOOD
 
 step5 = step4 / (2*a)
 cond_step_5 = abs( 1.0 / (2*a) * step4 / step5)
 
-cond_bad_root = cond_step_1 * cond_step_2 * cond_step_3 * cond_step_4 * cond_step_5
+cond_bad_root = cond_step_1 * cond_step_2 * cond_step_3 * cond_step_4 * cond_step_5 #4.9999619278380505e11: VERY BIG NUMBER: NOT GOOD
+#SMALLER ROOT CALCULATION ILL-CONDITIONED HERE
 
+# better method: exploit the fact that r1 * r2 = c/a; r2: greater root - in notes as x1
+r1_new = c / r2 #we got a = 1; r1_new calculation will be well-conditioned now, r2 was already well calculated  as shown above
 
-# better method: exploit the fact that r1 * r2 = c/a
-r1_new = c / r2 #we got a = 1; r1_new will be calculated well
-#we know the first root was calculated well, so we'll find the previously ill-condition by the above formula
-
+#TAKEAWAY
 #that's why you should use packages first and your own functions second, because the packages were created in a way to avoid these and other problems
+
+
 
 ### SCALING
 # we often have expressions like exp(a) / (exp(a) + exp(b))
@@ -168,9 +180,8 @@ r1_new = c / r2 #we got a = 1; r1_new will be calculated well
 a = 3999.0
 b = 4000.0
 
-bad_solution = exp(a) / (exp(a) + exp(b)) # NaN why? 
-#computer cannot handle e^3999, which is bigger than 10^308 - see slides about max number a computer can handle in double precision limit
-
+bad_solution = exp(a) / (exp(a) + exp(b)) # NaN 
+#computer cannot handle e^3999, which is bigger than 10^308 - see slide 16 about floatmax() in Float64 or line ca. 84
 exp(a) #Inf
 
 # better solution: use the fact that exp(a) / (exp(a) + exp(b)) = 1 / (1 + exp(b-a))
@@ -178,7 +189,7 @@ good_solution = 1.0 / (1.0 + exp(b-a))
 
 
 
-################ PART 2
+#################### PART 2 - SLIDES 31 AND BEYOND #######################################################
 
 # let's count flops!
 
