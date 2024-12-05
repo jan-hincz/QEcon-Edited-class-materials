@@ -193,37 +193,42 @@ good_solution = 1.0 / (1.0 + exp(b-a))
 
 # let's count flops!
 
-### matrix-vector multiplication
+### matrix-vector multiplication - slides 34-35
 n = 1000:500:5000 #range of numbers
-t = []
+t = [] # Any[]: empty vector that can contain any kind of data
 for n in n 
-    A = randn(n,n)
+    A = randn(n,n) #filled with random numbers from N(0,1)
     x = randn(n)
-    time = @elapsed for j in 1:100 # do it many times to be able to measure time
+    time = @elapsed for j in 1:100 # do it many times (e.g. 100) to be able to measure time
         A*x
     end
-    push!(t,time)
+    push!(t,time) #values from time will be pushed into t (before the loop t was empty: t = [])
 end
-
 #t will be the time of operations (not visible yet)
 
-data = hcat(n,t) #2 vectors stacked right to left; below: pretty table
-header = (["size","time"],["n","seconds"]) #columns; subtitles
- pretty_table(data;
-    header=header,
-    header_crayon=crayon"yellow bold" ,
-    formatters = ft_printf("%5.2f",2), #2 digits shown
-    display_size =  (-1,-1)) #to get entire table
+data = hcat(n,t) #2 vectors stacked left to right; below: pretty table
 
-scatter(n,t,label="data",legend=false,
-xaxis=(:log10,L"n"),yaxis = (:log10,"elapsed time (s)"),
-title = "Time of matrix-vector multiplication",);
+header = (["size","time"],["n","seconds"]) #[columns], [subtitles]
+
+pretty_table(data;
+header=header,
+header_crayon=crayon"yellow bold" ,
+formatters = ft_printf("%5.2f",2), #2 decimals shown
+display_size =  (-1,-1)) #to get the entire table
+
+scatter(n,t,label="data",legend=false, #the actual t of flops, not O(n^2) approximation 
+xaxis=(:log10,L"n"),yaxis = (:log10,"elapsed time (s)"), #:log10 -> scale will be in powers of 10
+title = "Time of matrix-vector multiplication",); #look at the plot below
 
 plot!(n,t[end]*(n/n[end]).^2,label=L"O(n^2)",lw=2,ls=:dash,lc=:red,legend = :topleft)
+#adding the red line of O(n^2); lw: line width, ls: line style, lc: line color
+#n[end] = 5000 (end of range), t[end] =+- 1.7 s (time of 5000 flops), 
 
-#(n_1/n_2)^2 = time_1/time_2 roughly as expected - see slides
+#slide 35: O(n^2) -> time_2/time_1 =+- (n_2/n_1)^2  
+#dots converge to red line as expected -> t[end]/t =+- (n_end/n)^2 -> t =+- t[end]*(n/n[end]).^2 
 
-### matrix-matrix multiplication
+
+### matrix-matrix multiplication - slide 36
 n = 100:100:1000
 t = []
 for n in n 
@@ -237,13 +242,16 @@ end
 
 data = hcat(n,t)
 header = (["size","time"],["n","seconds"])
+
 pretty_table(data;
-    header=header,
-    header_crayon=crayon"yellow bold" ,
-    formatters = ft_printf("%5.2f",2))
+header=header,
+header_crayon=crayon"yellow bold" ,
+formatters = ft_printf("%5.2f",2),
+display_size =  (-1,-1))
 
 scatter(n,t,label="data",legend=false,
 xaxis=(:log10,L"n"),yaxis = (:log10,"elapsed time (s)"),
 title = "Time of matrix-matrix multiplication",);
 
 plot!(n,t[end]*(n/n[end]).^3,label=L"O(n^3)",lw=2,ls=:dash,lc=:red,legend = :topleft)
+#slide 36: dots converge to red line given by O(n^3): as expected
