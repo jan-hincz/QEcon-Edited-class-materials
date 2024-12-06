@@ -2,11 +2,12 @@
 
 using PrettyTables, Plots, LaTeXStrings, LinearAlgebra
 
+#when at terminal ctrl+l gets you to the bottom of the interval
 
 ### ------------------------------
 ### norms 
 
-# vector norms 
+# vector norms - COMPARE TO SLIDES
 x = [1.0,2.0,3.0]
 norm(x,1) # L1 norm
 norm(x,2) # L2 norm
@@ -23,6 +24,7 @@ A  = [1.0 2.0; 3.0 4.0]
 norm(A) # frobenius norm 
 norm(A,1)
 
+#3 norms defined a lil different than frobenius norm
 opnorm(A) # operator norm (2)
 opnorm(A,1) # operator norm (1)
 opnorm(A,Inf) # operator norm (inf)
@@ -30,50 +32,55 @@ opnorm(A,Inf) # operator norm (inf)
 
 
 ### condition number
-
 A = float(I(4))
+#dots instead of 0s: sparse matrix - allows to store matrices using less data!
 κ = cond(A)
-rounding_bound = κ*eps() # upper bound from rounding errors
+rounding_bound = κ*eps() # upper bound from rounding errors - small number - good
 
 
 A = [1.0 2.5; 3.25 4.125]
-κ = cond(A)
+κ = cond(A) #~1 digit of precision lost: 8 < 10^1 
 rounding_bound = κ*eps()
 
 A = [ 1/(i+j) for i in 1:2, j in 1:2 ]
-κ = cond(A)
+κ = cond(A) #~1 digit of precision lost: 38 < 10^2
 rounding_bound = κ*eps()
 
 A = repeat([1 2 3],3,1)
-κ = cond(A)
-rounding_bound = κ*eps()
+κ = cond(A) #Inf, because non-invertible matrix
+rounding_bound = κ*eps() #Inf
+
+#if matrix is collinear κ will be high, if identity than minimal
+
 
 
 ### norms 
 
 # an example of how things are not always as they seem
 A = [ 1/(i+j) for i in 1:6, j in 1:6 ]
-κ = cond(A) # very large!
+κ = cond(A) # very large! still invertible, but difficult (around 10^8 -> around 8 digits loss of precision)
+det(A) #very small -> PC will be confused
 
 
+#let's reverse-engineer: (we know x is vector 1 to 6)
 x = 1:6
 b = A*x # cook up a right hand side
 
-x_sol = A\b
+x_sol = A\b #close to true x
 
-resid = A*x_sol - b # things look fine...? - be careful of the intepretation!
-difference = x - x_sol # things look fine...?
+resid = A*x_sol - b # things look fine...? - be careful of the intepretation! - it's not exactly 0.0
+difference = x - x_sol # things look fine...? - close to 0
 relative_error = norm(difference) / norm(x)
 rounding_bound = κ*eps() # upper bound due to rounding errors
 
 
-# perturb  the right hand side
+# perturb  the right hand side by a tiny number
 Δb = randn(size(b));  Δb = 1e-10*normalize(Δb);
 
 new_x = ((A) \ (b+Δb))
-Δx = new_x - x
-relative_error = norm(Δx) / norm(x)
-
+Δx = new_x - x #not that small
+relative_error = norm(Δx) / norm(x) #not that small
+#answers might be all over the place
 println("Upper bound from κ: $(κ*norm(Δb)/norm(b))")
 
 

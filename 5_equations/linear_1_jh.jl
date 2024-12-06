@@ -2,12 +2,17 @@
 
 using PrettyTables, Plots, LaTeXStrings, LinearAlgebra
 
-#A FILE I STARTED EDITING
+#TAKEAWAYS
+
+#use A\b #backslash operator of LinearAlgebra package to solve systems of linear equations
+
+
+
 ### let's solve a simple system of equations 
 A = [1.0 2.5; 3.25 4.125]
 b = [5.5,6.75]
 
-x_sol = A\b
+x_sol = A\b #backslash operator of LinearAlgebra package
 
 # confirm the solution
 A*x_sol - b #good
@@ -133,7 +138,7 @@ plot!(n,t[end]*(n/n[end]).^2,label=L"O(n^2)",lw=2,ls=:dash,lc=:red,legend = :top
 #operator A\b still quicker
 
 ### ----------------
-### LU factorization 
+### LU factorization - BEGINNING OF LESS IMPORTANT  #################################
 
 A₁ = [
      2    0    4     3 
@@ -169,9 +174,10 @@ U[4,:] = A₄[4,:]
 L[:,4] = A₄[:,4]/U[4,4]
 L
 
+#END OF LESS IMPORTANT ###############################################
+
 # let's check if the factorization is correct
 L*U - A₁
-
 
 # write it as a function (here we write it with loops)
 function my_lu_fact(A)
@@ -192,28 +198,35 @@ end
 A = rand(1.:9.,5,5)
 
 A_ret = my_lu_fact(A)
-L = tril(A_ret,-1) + I
-U = triu(A_ret)
+L = tril(A_ret,-1) + I #takes lower triangular of any matrix
+#I is identity matrix, here it knows what dimension is; thx to LinearAlgebra package
+tril(A_ret,-1)
+tril(A_ret,-2)
+U = triu(A_ret) #takes upper  triangular of any matrix
 
 # let's check if the factorization is correct
 L*U - A
 
-# let's compare with Julia's LU factorization
-L_1,U_1,P = lu(A)
-L_1 - L
-U_1 - U 
+# let's compare (our code) with Julia's (LinearAlgebra) LU factorization
+L_1,U_1,P = lu(A) #LinearAlgebra function
+L_1 - L #not 0
+U_1 - U #not 0
 
 L_1 * U_1 - A # is Julia wrong???
-P 
+P #4th, 5th, 2nd, 1st, 3rd row - it was permutated
 
+#Julia returns decomposition A~ (with permutation), not A
+
+#we can turn off pivoting
 
 L_2,U_2,P = lu(A,NoPivot())
-L_2 - L 
-U_2 - U
+L_2 - L #0 as expected
+U_2 - U #0 as expected
 
-L_2 * U_2 - A 
-P
+L_2 * U_2 - A #0 as expected
+P #1 2 3 4 5
 
+#? lu -> more info; check documentation of functions you don't know
 
 
 ### ----------------
@@ -225,8 +238,8 @@ function my_lu_solve(A,b)
     A_ret = my_lu_fact(A)
     L = tril(A_ret,-1) + I
     U = triu(A_ret)
-    y = forwardsub(L,b)
-    x = backsub(U,y)
+    y = forwardsub(L,b) #function above
+    x = backsub(U,y) #function above
     return x
 end
 
@@ -239,13 +252,16 @@ resid = A*x - b
 
 # another example... 
 ϵ = 1e-15; A = [1 1 2;2 2+ϵ 0; 4 14 4]; b = [-5;10;0.0]
-x = my_lu_solve(A,b)
+x = my_lu_solve(A,b) #1 set of numbers
 resid = A*x - b
-x = A\b
+x = A\b #2nd set of numbers 
+#different numbers -> because we divided by very small number (epsilon) - pivoting -> problems
 resid = A*x - b
 
-L,U   = my_lu_fact(A)
+L,U   = my_lu_fact(A) #very big number e16
 L,U,P = lu(A)
+
+##### TAKEAWAY - USE FUNCTION, PREFERABLY WITH PIVOTING
 
 
 
