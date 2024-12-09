@@ -3,13 +3,13 @@
 TAKEAWAYS
 #by representing numbers as floats with rounding errors order of operations might matter
 #Float64 has 15 or 16 digits of precision
-# Float64 are not equally spaced!!!
+# Float64 numbers are not equally spaced!!!
 # condition number = 10^k means you lose k digits of precision
 #you should use packages first and your own functions second, because the packages were created to avoid problems (e.g. of ill condition)
-#make sure Julia can handle the magnitude the numbers (machine epsilon, floatmax(), floatmin() etc.)
+#make sure Julia can handle the magnitude of the numbers (machine epsilon, floatmax(), floatmin() etc.)
 
 
-using PrettyTables, Plots, LaTeXStrings #for part 2 only (around line XXX)
+using PrettyTables, Plots, LaTeXStrings #for part 2 only (around line 192)
 
 ### PRELIMINARIES 
 x_int  =  1
