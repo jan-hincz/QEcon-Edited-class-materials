@@ -2,36 +2,37 @@
 
 using PrettyTables, Plots, LaTeXStrings, LinearAlgebra
 
-#when at terminal ctrl+l gets you to the bottom of the interval
+#TAKEAWAYS (SLIDES 15 - XXX)
+
+#when at terminal, ctrl+l gets you to the bottom of the terminal
 
 ### ------------------------------
 ### norms 
 
-# vector norms - COMPARE TO SLIDES
+# vector norms - slide 16
 x = [1.0,2.0,3.0]
-norm(x,1) # L1 norm
-norm(x,2) # L2 norm
-norm(x,Inf) # infinity norm
+norm(x,1) # L1 norm: sum of absolute values
+norm(x,2) # L2 norm: length of a vector
+norm(x,Inf) # infinity norm: max entry of a vector
 
 y = [5.0,6.0,7.0]
+norm(x+y,2) #(6^2 + 8^2 + 10^2)^0.5 = 14.14
+norm(x,2) + norm(y,2) #14.22 greater (or equal) than above: triangular inequality 
 
-norm(x+y,2)
-norm(x,2) + norm(y,2)
 
-# matrix norms
+#(Frobenius) matrix norms - slide 17
 
 A  = [1.0 2.0; 3.0 4.0]
-norm(A) # frobenius norm 
-norm(A,1)
+norm(A) # frobenius norm (2nd by default): stack entries of A into one vector and calculate its (L2) length 
+norm(A,1) #1st frobenius norm: |1| + |2| + |3| + |4| = 10
 
-#3 norms defined a lil different than frobenius norm
-opnorm(A) # operator norm (2)
+#induced matrix norms - slide 17
+opnorm(A) # default operator norm (2)
 opnorm(A,1) # operator norm (1)
 opnorm(A,Inf) # operator norm (inf)
 
 
-
-### condition number
+### condition number - RESUME (SLIDE 19) XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
 A = float(I(4))
 #dots instead of 0s: sparse matrix - allows to store matrices using less data!
 κ = cond(A)
