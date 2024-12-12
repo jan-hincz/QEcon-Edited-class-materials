@@ -2,7 +2,7 @@
 
 using PrettyTables, Plots, LaTeXStrings, LinearAlgebra, IterativeSolvers
 
-
+#TAKEAWAYS (SLIDES 23 - 28) #RESUMEEEEEE
 
 ### calling iterative solvers
 
