@@ -1,8 +1,14 @@
 # Examples from/based on Fundamentals of Numerical Computation, Julia Edition. Tobin A. Driscoll and Richard J. Braun
 
 using PrettyTables, Plots, LaTeXStrings, LinearAlgebra, NLsolve, Roots
-#Roots for a univariate function, NLsolve more general - use it for more complicated tasks
 
+#TAKEAWAYS (SLIDES 29 - XXX) #RESUUUUUUUME (SLIDE 30)
+
+#Roots for a univariate function, NLsolve more general - use it for more complicated tasks
+#1. GENERAL LESSON: NO GUARANTEE A NON-LINEAR JULIA FUNCTION WILL FIND ANY ROOTS
+#2. ALWAYS VERIFY COVERGENCE: TRUE
+#3. NO GUARANTEE JULIA WILL FIND ALL ROOTS
+#4. TRY MANY STARTING POINTS
 
 
 # example using NLsolve 
