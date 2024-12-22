@@ -48,7 +48,7 @@ t_operator = []
 t_jacobi = []
 
 for n in n 
-    A = I(n) + 0.0001*randn(n,n) #square A very likely strictly dominant
+    A = I(n) + 0.0001*randn(n,n) #square A very likely strictly dominant - slide 28
     b = randn(n)
     time_operator = @elapsed for j in 1:10 
         A\b #backslash operator of LinearAlgebra
