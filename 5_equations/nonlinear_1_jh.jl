@@ -10,7 +10,16 @@ using PrettyTables, Plots, LaTeXStrings, LinearAlgebra, NLsolve, Roots
 #3. NO GUARANTEE JULIA WILL FIND ALL ROOTS
 #4. TRY MANY STARTING POINTS
 
+#bisection method
+#+: in theory guaranteed to converge to a root
+#-: slow; if multiple roots, will find just one of them (general problem with root-finding algos)
+#-: works only for univariate functions; vectors as inputs won't work (slide 31),
 
+#Newton metod (slide 41-42)
+#+: fast; works for multivariate functions (slide 46)
+#-: good guess needed; not guaranteed to converge
+#-: gotta calculate derivative at each step
+#-: has to be sufficiently smooth
 # example using NLsolve 
 
 f(x) = x.^2 .- 3 .+ x .* sin.( 1 ./ x .+ x .^ 2 )
@@ -62,7 +71,7 @@ plot(f, -1, 1, label="f(x) = x*exp(x) - 2", legend=:topleft)
 
 x = [BigFloat(10);zeros(7)] #BigFloat will allow better than double precision
 for k = 1:7
-    x[k+1] = x[k] - f(x[k]) / dfdx(x[k]) #from slide 39
+    x[k+1] = x[k] - f(x[k]) / dfdx(x[k]) #from slide 38
 end
 r = x[end] #so long,because we used BigFloat
 
