@@ -119,7 +119,7 @@ vline!([a_optim[1]],label="Optimal level of assets saved")
 ## 2. Put in the correct dimensionality while defining the  optimizer used
 ## 3. Plot the path of optimal consumption
 
-#TASK1: see slide 20
+#TASK1: see slide 21
 function nlopt_objective_fn(a::Vector, grad::Vector,hh)
     ####### TASK 1:  Fill in the missing parts in the nlopt_objective_fn function #######
         c_1     = hh.R*hh.a_0   + hh.y[1] - a[1] #Replace the 0!
