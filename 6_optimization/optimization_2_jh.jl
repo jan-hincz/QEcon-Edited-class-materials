@@ -20,7 +20,7 @@ using PrettyTables, Plots, LaTeXStrings, LinearAlgebra, NLsolve, Optim, Roots, C
 #if you have to: use existing packages NLopt, ForwardDiff
 
 
-rosenbrock(x) = (1.0 .- x[1]).^2 .+ 100.0 .* (x[1] .- x[2].^2).^2 #R^2 -> R function
+rosenbrock(x) = (1.0 .- x[1]).^2 .+ 100.0 .* (x[1] .- x[2].^2).^2 #R^2 -> R function; easy to verify global min are [1,1], [1,-1]
 #Rosenbrock function - used as a performance test for optimization algos 
 grid = -1.5:0.11:1.5;
 
@@ -82,7 +82,7 @@ res_nm.minimizer #VERY BAD [0.65, 0.81] INSTEAD OF [1,1]
 # - the closer it gets to solution, the cooler it gets - then jumps with smaller steps
 res_sa = optimize(rosenbrock, x0, SimulatedAnnealing(), Optim.Options(store_trace=true, extended_trace=true, iterations = 100000)) #Status: failure
 plot_optim(res_sa, x0, -0:0.01:1.5, -0:0.01:1.5,9000)
-res_sa.minimizer #[~1,~-1] instead of [1,1] - VERY BAD
+res_sa.minimizer #[~1,~-1] instead of [1,1] - FOUND THE OTHER MINIMUM [1,-1], STRANGE, BECAUSE FAR AWAY FROM x0 = [1.0, 0.5]
 #DOESN'T WORK VERY WELL HERE AND IN GENERAL TOO
 
 ########## END OF NOT VERY IMPORTANT - METHODS WHICH ARE OFTEN INEFFICIENT #######################
