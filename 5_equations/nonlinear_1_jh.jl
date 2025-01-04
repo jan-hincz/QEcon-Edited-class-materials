@@ -55,7 +55,7 @@ find_zero(f, (1.4,1.5), Order1(), verbose = true) #SECANT METHOD; 35 iterations;
 find_zero(f, 1.4, verbose = true) #Converged to: 2.199723519572541; modified Secant; JUST 5 ITERATIONS
 
 
-###UNTIL THE END: NOT VERY IMPORTANT: MANUAL FUNCTIONS, WHICH ARE NOT VERY SMART ################################
+#############UNTIL THE END: NOT VERY IMPORTANT: MANUAL FUNCTIONS, WHICH ARE NOT VERY SMART ################################
 
 # bisection method - MANUAL FUNCTION, NOT VERY SMART, E.G. NO CAP ON # OF ITERATIONS
 function bisection(f,a,b,tolerance) #tolerance here related to length of the interval b-a, not value of the function
