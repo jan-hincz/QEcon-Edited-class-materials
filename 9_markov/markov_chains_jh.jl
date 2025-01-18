@@ -50,9 +50,6 @@ plot!(sample_path_initU, label = "start unemployed") #simulation for an unemploy
 
 #markov chains allow to model heterogeneous agents
 
-
-#WE'LL RESUME IN THE NEW YEAR ########################################
-
 ## How does the distribution of employed/unemployed agents evolve over time? 
 
 ψ0 = [0.05 0.95] # let this be the initial distribution  
@@ -61,8 +58,8 @@ t = 200 # path length
 ## Allocate memory
 U_vals = zeros(t)
 E_vals = similar(U_vals)
-U_vals[1] = ψ0[1]
-E_vals[1] = ψ0[2]
+U_vals[1] = ψ0[1] #unemployment
+E_vals[1] = ψ0[2] #employment
 
 for i in 2:t
     ψ = [U_vals[i-1] E_vals[i-1]] * P # update the distribution
@@ -71,7 +68,7 @@ for i in 2:t
 
 end
 
-plt = scatter(U_vals,E_vals, xlim = [0, 1], ylim = [0, 1], label = false)
+plt = scatter(U_vals,E_vals, xlim = [0, 1], ylim = [0, 1], label = false) #you can see some steady state after a while
 plot!(xlabel="Unemployement rate", ylabel="Employment rate", title="Markov chain: Employment dynamics")
 
 
@@ -96,19 +93,19 @@ time_series = gdp_growth[sample_path_initSR];
 plot(time_series,xlabel = "time",ylabel = "annualized growth rate", label=false)
 
 
-#### APPROXIMATION ####
-#### Approximation of AR(1) process using the Tauchen method ####
+#### APPROXIMATION (slides 14-19)####
+#### Approximation of AR(1) process using the Tauchen method [QuantEcon package] ####
 ## x_{t+1} = ρ⋅x_t + ε_t
 ## ε_t ~ N(0, σ^2)
 ## Let:
-ρ = 0.9
+ρ = 0.9 #with lower - process shrinks faster -> smaller grid needed
 σ = 0.02
 N_states = 5
 tauch_approximation_1 = tauchen(N_states,ρ, σ)
 tauch_approximation_1.p
-tauch_approximation_1.state_values
+tauch_approximation_1.state_values #range syntax
 
-state_space_1 = collect(tauch_approximation_1.state_values)
+state_space_1 = collect(tauch_approximation_1.state_values) #elements of the above range
 
 #### Changing the m (see slides) ####
 ρ = 0.9
@@ -126,7 +123,7 @@ state_space_2 = collect(tauch_approximation_2.state_values)
 σ = 0.02
 N_states = 5
 μ = 0
-rouw_approximation  = rouwenhorst(N_states,ρ, σ,μ)
+rouw_approximation  = rouwenhorst(N_states,ρ, σ,μ) #QuantEcon package function
 
 rouw_approximation.p
 state_space_2 = collect(rouw_approximation.state_values)
