@@ -3,13 +3,14 @@ using  Plots, Parameters
 
 #TAKEAWAYS
 #findfirst() - line ca. 100
+#at the end - what is wrong? - ask Piotr and Marcin!!! (line ca. 133)
 
 @with_kw struct NGMProblem #@with_kw: macro of Parameters package
 
     β = 0.95 # discount factor
     α = 0.3 # production function parameter - slide 20
     δ = 0.1 # depreciation rate
-    γ = 2.0 # intertemporal elasticity of substitution (inverse) - slide 20 (as gamma in slides)
+    γ = 2.0 # intertemporal elasticity of substitution (inverse) - slide 20
 
     f = x -> x^α # production function
     u = γ == 1 ? c -> log(c) : c -> c ^ (1-γ) / (1-γ)   # CRRA utility function
@@ -104,30 +105,36 @@ end
 
 plot_k_path = plot(1:Time,k_path, label="k(t)",linewidth=4,xlabel = "t",ylabel = "k")
 
-σ γ
 # compare the speed of convergence for two different elasticities of substitution
 
-my_ngm_low_γ = NGMProblem(γ=0.5,n=300)
-v_low_γ, γ_low_γ, iter_low_γ, err_low_γ, v_history_low_γ = vfi(my_ngm_low_γ)
+my_ngm_low_γ = NGMProblem(γ=0.5,n=300) #defined at line ca. 7
+v_low_γ, σ_low_γ, iter_low_γ, err_low_γ, v_history_low_γ = vfi(my_ngm_low_γ) #defined at line ca. 60
 
 my_ngm_high_γ = NGMProblem(γ=5.0,n=300)
-v_high_γ, γ_high_γ, iter_high_γ, err_high_γ, v_history_high_γ = vfi(my_ngm_high_γ)
+v_high_γ, σ_high_γ, iter_high_γ, err_high_γ, v_history_high_γ = vfi(my_ngm_high_γ)
 
-Time = 100 
+Time = 100
 k_path_low_γ = zeros(Time)
 k_path_high_γ = zeros(Time)
 k_path_low_γ[1] = my_ngm_low_γ.k_grid[1] # start at the lowest level of capital
 k_path_high_γ[1] = my_ngm_high_γ.k_grid[1] # start at the lowest level of capital
 
 for i in 2:Time
-    k_path_low_γ[i] = γ_low_γ[findfirst(x->x==k_path_low_γ[i-1],my_ngm_low_γ.k_grid)]
-    k_path_high_γ[i] = γ_high_γ[findfirst(x->x==k_path_high_γ[i-1],my_ngm_high_γ.k_grid)]
+    k_path_low_γ[i] = σ_low_γ[findfirst(x->x==k_path_low_γ[i-1],my_ngm_low_γ.k_grid)]
+    k_path_high_γ[i] = σ_high_γ[findfirst(x->x==k_path_high_γ[i-1],my_ngm_high_γ.k_grid)]
 end
 
 
 plot_k_convergence = plot(1:Time,k_path_low_γ, label="γ = 0.5",linewidth=4,xlabel = "t",ylabel = "k",legend=:topleft);
 plot!(1:Time,k_path_high_γ, label="γ = 5.0",linewidth=4,xlabel = "t",ylabel = "k",legend=:topleft)
+#quicker convergence for lower γ - less concave function - lower consumption smoothing motive
+#-> will get quicker to steady state of c and k by in the meantime saving more and sacrificing c
 
 # what is wrong here? 
-plot(γ_high_γ - my_ngm_high_γ.k_grid)
-plot(γ_low_γ - my_ngm_low_γ.k_grid)
+plot(σ_high_γ - my_ngm_high_γ.k_grid) #IMO: k' - k, it should be 0 for k_star = 2.625 and it's 0 for k +-= 130
+plot(σ_low_γ - my_ngm_low_γ.k_grid)
+
+#Chat GPT suggests
+#The discrepancy likely arises from grid resolution or numerical precision issues. 
+#Adjusting the grid size or refining the numerical methods can help achieve a more accurate solution,
+#aligning the policy function's steady state with the theoretical steady state capital k*
