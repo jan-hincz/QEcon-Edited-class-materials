@@ -17,7 +17,7 @@ using  Plots, Parameters, PrettyTables
     k_star = ((β^(-1) - 1 + δ) / α) ^(1/(α-1)) # steady state capital (slide 23)
 
     k_min = 0.5 * k_star # minimum capital
-    k_max = k_star # maximum capital
+    k_max = 1.25*k_star # maximum capital - MAYBE CHANGE TO 1 * ########################
     
     n = 100 # number of grid points
     k_grid = range(k_min,stop=k_max,length=n) #n-element grid for capital from k_min to k_max
