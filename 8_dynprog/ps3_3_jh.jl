@@ -1,3 +1,6 @@
+
+#Problem 3: Convergence in the Neoclassical Growth Model
+
 ## Neoclassical growth model
 using  Plots, Parameters, PrettyTables
 
@@ -80,7 +83,7 @@ v_mid_γ, σ_mid_γ, iter_mid_γ, err_mid_γ, v_history_mid_γ = vfi(my_ngm_mid_
 my_ngm_high_γ = NGMProblem2(n=300,γ=2)
 v_high_γ, σ_high_γ, iter_high_γ, err_high_γ, v_history_high_γ = vfi(my_ngm_high_γ)
 
-#PLOTS
+#PLOTS - to check whether they meet economic intuition
 
 plot_v_low_γ = plot(my_ngm_low_γ.k_grid,v_low_γ, label="v(k)",linewidth=4,xlabel = "k",ylabel = "v");
 plot_σ_low_γ = plot(my_ngm_low_γ.k_grid,σ_low_γ, label="policy: k'(k)", linewidth=4,xlabel = "k",);
@@ -119,6 +122,8 @@ plot(my_ngm_low_γ.k_grid,σ_low_γ, label="γ = 0.5", linewidth=4,xlabel = "k",
 plot!(my_ngm_mid_γ.k_grid,σ_mid_γ, label="γ = 1", linewidth=4,xlabel = "k", ylabel = "k'")
 plot!(my_ngm_high_γ.k_grid,σ_high_γ, label="γ = 2", linewidth=4,xlabel = "k", ylabel = "k'")
 vline!([my_ngm_high_γ.k_star], label="steady state",linewidth=2,linestyle=:dash)
+
+
 
 # obtain a sample path for the capital stock
 
@@ -190,10 +195,10 @@ function half_convergence(n::Int64,γ_vec::Vector)
     return table
 end
 
-half_convergence(300,[0.5,1.0,2.0])
+half_convergence(300,[0.5,1.0,2.0]) #6,8, 12 - seems like some rounding issue for γ = 2, because for γ = 1.999 it's still 11 like above (line 153) 
+half_convergence(300,[0.5,1.0,1.999]) #6,8,11
 
-
-#Plots of convergence
+#Plots
 plot_capital = plot(1:Time,k_path_low_γ, label="k(t); γ = 0.5 ",linewidth=4,xlabel = "t",ylabel = "k")
 plot!(1:Time,k_path_mid_γ, label="k(t); γ = 1",linewidth=4,xlabel = "t",ylabel = "k")
 plot!(1:Time,k_path_high_γ, label="k(t); γ = 2",linewidth=4,xlabel = "t",ylabel = "k")
@@ -226,9 +231,9 @@ plot!(1:(Time-1),1 .-i_ratio_mid_γ, label="c_ratio(t); γ = 1 ",linewidth=4,xla
 plot!(1:(Time-1),1 .-i_ratio_high_γ, label="c_ratio(t); γ = 2 ",linewidth=4,xlabel = "t",ylabel = "c ratio")
 
 plot(plot_capital,plot_output,plot_i_ratio,plot_c_ratio,layout=(2,2),legend=:topright)
+savefig("convergence_plots_1.pdf")
 
 #3.2. FUNCTION WITH CONVERGENCE PLOTS
-
 
 function convergence_plots(Time::Int64,γ_vec::Vector)
     plot_capital = plot()
@@ -259,8 +264,9 @@ function convergence_plots(Time::Int64,γ_vec::Vector)
     return plot(plot_capital,plot_output,plot_i_ratio,plot_c_ratio, layout=(2,2),legend=:topright)
 end
 
-convergence_plots(200,[0.5,1.0,2.0])
-
+convergence_plots(300,[0.5,1.0,2.0])
+savefig("convergence_plots_2.pdf")
+#figures preserve the ranking, but once again function seems to skew the results a bit vs. outside of function
 
 #quicker convergence for lower γ - less concave function - lower consumption smoothing motive
 #-> will get quicker to steady state of c and k by in the meantime saving more and sacrificing c
