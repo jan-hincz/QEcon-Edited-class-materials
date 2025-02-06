@@ -1,9 +1,12 @@
 ### example from julia.quantecon.org/introduction_dynamics/short_path.html
 
-
 using LinearAlgebra, Statistics
 
-graph = Dict(zip(0:99, #like a dictionary; here: can only go forwards
+#TAKEAWAYS (slides 3-7): NONE
+
+
+
+graph = Dict(zip(0:99, #dictionary; here: can only go forwards
 #that will ensure 1 iteration will be needed (we can solve it by backward induction) 
                  [
                      [(14, 72.21), (8, 11.11), (1, 0.04)], #shows direct distances from 0
@@ -106,35 +109,37 @@ graph = Dict(zip(0:99, #like a dictionary; here: can only go forwards
                      [(98, 0.3)],
                      [(99, 0.33)],
                      [(99, 0.0)],
-                 ]))
+                     ]
+))
                  
                
                  
-                 
+#slide 7
 function update_J!(J, graph) #Julia convention: when you have functions modifying things - put !
-    next_J = Dict()
-    for node in keys(graph)
+    next_J = Dict() #empty dictionary; our dictionary above was named graph
+    for node in keys(graph) #keys(): 1st part of a dict entry: here - # of a node
         if node == 99 #destination d is node 99
-            next_J[node] = 0
+            next_J[node] = 0 #cost of moving from 99 to 99 is 0
         else
-            next_J[node] = minimum(cost + J[dest] for (dest, cost) in graph[node]) #dest := next stop
+            next_J[node] = minimum(cost + J[dest] for (dest, cost) in graph[node]) #here dest := next stop (s')
+            #to dest we assign direct next nodes and to cost the respective costs
         end
     end
     return next_J
 end
 
-graph[:20] #from 20 you can go to 33, 24, 98, costs are respectively: 145.8, 9.81, 3523.33
-graph[:0] #tuples
-graph[:99]
-typeof(myzip)
-keys(graph)
+graph[:20] #tuple; from 20 you can go to 33, 24, 98, costs are respectively: 145.8, 9.81, 3523.33
+graph[:0]
+graph[:99] #paths can only go forwards -> it's 0 cost from last node 99 to 99
+typeof(graph) #Dict{Int64, Vector{Tuple{Int64, Float64}}}
+keys(graph) #100 nodes from 0 to 99 (not in order here)
 
-
-
+#slide 6 - setting J0 to very large M (Infinity)
 J = Dict((node => Inf) for node in keys(graph))
+#keys are the first elements of each entry of Dictionary (for graph defined above: number of node)
 
 while true
-    next_J = update_J!(J, graph)
+    next_J = update_J!(J, graph) #function defined above
     if next_J == J
         break
     else
@@ -142,29 +147,29 @@ while true
     end
 end
 
-
-
+J #J(s) for each s (node)
 
 
 function print_best_path(J, graph)
-    sum_costs = 0.0
+    sum_costs = 0.0 #initial sum of costs from initial current_location 0 to destination 99
     current_location, destination = extrema(keys(graph))
+    #extrema() -> returns both min and max number of a node (0,99)
     while current_location != destination
-        println("node $current_location")
-        running_min = 1e10
-        minimizer_dest = Inf
+        println("node $current_location") #printing current location; initial: node 0
+        running_min = 1e10 #10^10
+        minimizer_dest = Inf #setting J0 = M = Infinity (slide 6)
         minimizer_cost = 1e10
-        for (dest, cost) in graph[current_location]
-            cost_of_path = cost + J[dest]
+        for (dest, cost) in graph[current_location] #for a given current location shows pairs of direct nodes (dest) and distances (cost)
+            cost_of_path = cost + J[dest] #slide 7
             if cost_of_path < running_min
-                running_min = cost_of_path
+                running_min = cost_of_path #running_min is assigned cost_of_path
                 minimizer_cost = cost
                 minimizer_dest = dest
             end
         end
 
-        current_location = minimizer_dest
-        sum_costs += minimizer_cost
+        current_location = minimizer_dest #the new node
+        sum_costs += minimizer_cost #you add minimizer_cost to sum of costs (initial sum_costs = 0.0)
     end
 
     sum_costs = round(sum_costs, digits = 2)
@@ -173,7 +178,4 @@ function print_best_path(J, graph)
 end
 
 
-
-
-
-print_best_path(J, graph)                 
+print_best_path(J, graph) #shortest path from 0 to 99

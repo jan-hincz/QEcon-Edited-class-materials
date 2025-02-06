@@ -2,10 +2,11 @@
 ## Tree Cutting 
 using Distributions, Plots, Parameters
 
+#TAKEAWAYS (slides 8-15)
 #you can compare it to mccall file, many similarities
 #now: Parameters package makes unpacking parameters easier
 #struct: structures show up often when you optimize your code (e.g. for speed)
-#structures once run cannot be changed -> you would have to Ctrl+D in the terminal (restarting it)
+#structures once run, cannot be changed -> you would have to Ctrl+D in the terminal (restarting it)
 #and changing it before running it the first time
 
 @with_kw struct TreeCuttingProblem #Parameters package -> @with_kw : "with keywords"
