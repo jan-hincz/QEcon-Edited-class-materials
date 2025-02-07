@@ -138,7 +138,9 @@ keys(graph) #100 nodes from 0 to 99 (not in order here)
 J = Dict((node => Inf) for node in keys(graph))
 #keys are the first elements of each entry of Dictionary (for graph defined above: number of node)
 
+iter = 0
 while true
+    iter = iter + 1 
     next_J = update_J!(J, graph) #function defined above
     if next_J == J
         break
