@@ -5,6 +5,7 @@ using Distributions, LinearAlgebra,Plots, Random, QuantEcon
 #slide 19: Tauchen vs. Rouwenhorst method (AR(1) discretization)
 
 
+
 ## Seting a random seed for reproducibility
 Random.seed!(1111)
 
