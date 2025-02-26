@@ -127,7 +127,7 @@ value_plot = plot(xlabel = "a", ylabel = "V", title = "Value function")
 for j in 1:model.N_z
     plot!(value_plot,model.a_vec[1:75], v_opi[1:75,j], label = false, color = lines_scheme[j], lw=3)
 end
-#see new plot code in github
+
 #for much lower persistance of z, most people will find themselves every period in mode value of z
 #0.1 -> #nice monotonicity - v lines corresponding to different z won't touch each other
 #a is very concave only for low z; with high z you dont want to consume everything, you want too save
