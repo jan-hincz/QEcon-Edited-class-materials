@@ -1,0 +1,192 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+
+\title{Quantitative Economics - Final Project}
+\author{Jan Hincz, Tymoteusz Metrak, Wojciech Szymczak}
+\date{February 28, 2025}
+
+\begin{document}
+
+\maketitle
+
+
+\section*{Introduction}
+This project aims to analyze the effects of increased tax progressivity on economy, as measured by changes to several economic indicators, including interest rates, wages, and inequality. 
+\\
+\newline
+The majority of the classic literature studying the problem of progressive taxation focused on its function of substituting for insurance markets. According to Aiyagari (1994), the increased progressivity of the economy has beneficial insurance properties due to reducing the variation in labour income. Further analysis, including studying changes in welfare involving shifts, showed that economies with more ex-ante heterogeneity in household characteristics could benefit from progressive taxation (Holter et al. 2019). A recent numerical experiment showed that progressive taxation could lead to steady states, where the level of aggregated labor and capital inputs are substantially higher (Carroll and Young 2011). The further implications of the Carroll and Young (2011) 
+ analysis showed a decrease in income inequality, but an increase in wealth inequality. In the conclusion part, we reflect on our results in comparison to the literature, with special emphasis placed on the role of taxation in substituting for the insurance markets. 
+
+
+\section*{Model specifics}
+
+The model is an extension of the Aiyagari model with balanced government budget. Labor productivity is governed by AR(1) Markov process, so we can implement Markov chain methods. We start by formulating the household problem recursively. In a stationary environment, an agent with assets a and idiosyncratic level productivity z faces the following:
+
+\[
+V(a, z) = \max_{c, a'} \left\{ u(c) + \beta \sum_{z' \in Z} P(z, z') V(a', z') \right\}
+\]
+
+\[
+y = zw 
+\]
+
+\[
+c + a' = y - \mathcal{T}(y) + (1 + r) a 
+\]
+
+\[
+a' \geq -\phi\ = 0
+\]
+
+Notes: Time subscripts and dependence on government policies suppressed in notation. After all, idiosyncratic tax payments result from heterogeneous labor productivity.
+
+
+\section*{Parameters calibration (besides \(\beta\))}
+\subsection*{Calibration when \(\lambda\) = 0.0}
+
+\begin{itemize}
+    \item Provided parameters: \(\gamma\) =  2, \(\phi = 0\),
+\(\rho\) = 0.9 , \(\sigma\) = 0.4.
+    \item  Labor Share (Share of labor compensation in GDP at current prices for USA in the latest available 2019): ca. 0.6 (Groningen Growth and Development Centre 2023). Therefore, we will assume that \(\alpha\) = 1 - 0.6 = 0.4\
+    \item Finding \(\tilde{z}\): By recursion, we get
+\[
+\ln z_{i,t+1} = \ln \tilde{z} + \sum_{j=0}^{\infty} \rho^{j} \varepsilon_{i,t+1-j},
+\]
+
+Because \(\epsilon_{i,t+1}\) is an i.i.d. shock with mean 0 and variance \(\sigma^{2}\):
+\[
+\mathbb{E}\ln z_{i,t+1} = \ln \tilde{z} + \sum_{j=0}^{\infty} \rho^{j} \mathbb{E}(\varepsilon_{i,t+1-j}) = \ln \tilde{z}
+\]
+and
+
+\[
+{Var}(\ln z_{i,t+1}) = {Var}(\sum_{j=0}^{\infty} \rho^{j} \varepsilon_{i,t+1-j}) = \sum_{j=0}^{\infty} \rho^{2j} {Var}(\varepsilon_{i,t+1-j}) = \frac{\sigma^{2}}{1-\rho^{2}}
+\]
+
+When discretizing the productivity process, the Julia QuantEcon.tauchen function assumes i.i.d. \(\epsilon_{i,t} \sim N(0, \sigma^2)\). Let's do the same. Then 
+\(z_{i,t+1}\) is distributed i.i.d. log-normally, so 
+
+\[
+\mathbb{E}z_{i,t} = exp(\mathbb{E}\ln z_{i,t+1} + \frac{{Var}(\ln z_{i,t+1})}{2}) = exp(\ln \tilde{z}+\frac{\sigma^{2}}{2(1-\rho^{2})}) =1
+\]
+
+After logarithmic and exponential transformations and given  \(\rho\) = 0.9 , \(\sigma\) = 0.4, we get 
+
+\[
+\tilde{z} = e^{-8/19} \approx 0.656355555
+\]
+
+
+\item Finding \(\delta\) and \(A\) (independent of \(\lambda\)) and \(\tau\) for \(\lambda\) = 0. When \(\lambda\) = 0, in equilibrium w = 1, L = 1, and \(\frac{wL}{A K^{\alpha} L^{1 - \alpha}}\) = \(\frac{wL}{Y}\) = (1 - \(\alpha\)) = 0.6 (labor income share). Therefore:
+\begin{itemize}
+    \item Output Y = 1/0.6 = 5/3;
+    \item G = 1/3, because G/Y = 0.2; 
+    \item G = \(\tau\)\(\bar{y}\), but since \(\bar{y}\) = 1 and G = 1/3, we get \(\tau\) = 1/3 (linear tax system in \(\lambda\) = 0 state);
+     \item Formulas for the investment to output ratio I/Y, capital and  labor compensation: 
+        \[
+I/Y = \frac{\delta K}{A K^{\alpha} L^{1 - \alpha}} = 0.2; \quad r = \alpha A K^{\alpha - 1} L^{1 - \alpha} - \delta; \quad w = (1 - \alpha) A K^{\alpha} L^{-\alpha}
+\]
+\item From the investment to output ratio I/Y (and knowing Y = 5/3):
+        \[
+1/5 = \frac{\delta K}{5/3} \quad=> \quad {\delta K} = 1/3 \quad => \quad {\delta }= \frac{1}{3 K}
+\]
+
+\item From the wage equation:
+        \[
+w = (1 - \alpha) A K^{\alpha} L^{-\alpha} \quad => w = 0.6 A K^{0.4} \quad => \quad 5/3 = A K^{0.4} \quad => \quad A=\frac{5}{3K^{0.4}}
+\]
+
+
+\item From the capital rent equation:
+\[
+r = \alpha A K^{\alpha - 1} L^{1 - \alpha} - \delta \quad => \quad 0.04 = 0.4\frac{5}{3}\frac{1}{K^{0.4}} K^{-0.6} - \frac{1}{3 K} \quad =>
+\]
+        \[
+=> \quad 0.1K = \frac{5}{3}K^{0.6} K^{-0.6} - \frac{5}{2}*\frac{1}{3} \quad => \quad 1/10K=5/3-5/6 \quad => \quad K=5/6*10=25/3
+\]
+
+\item Therefore, we may easily calculate the following:
+        \[
+K=\frac{25}{3}; \quad \delta = \frac{1}{3K}=\frac{1}{3}*\frac{3}{25}=\frac{1}{25}=0.04;
+\]
+        \[
+A = \frac{5}{3}*\frac{1}{K^{0.4}}=\frac{5}{3}*\frac{1}{\frac{25}{3}^{0.4}} \approx 0.7137
+\]
+\end{itemize}
+\end{itemize}
+
+\subsection*{Calibration when \(\lambda\) = 0.15}
+
+\begin{itemize}
+    \item The starting point is to calculate the tax rate, given the constant ratio of government spending to output (20\%)
+    \item Government spending:
+    \begin{gather*}
+    G = \int^1_0 T(y_i) \,di 
+    \end{gather*}
+    \item With a tax function:
+    \begin{gather*}
+        T(y_i) = y_i - (1-\tau)y^{(1-\tau)}\bar{y}^{-\lambda} 
+    \end{gather*}
+    \item Solve for tau, knowing that G = 0.2Y
+    \item Starting with what is the average income in an economy with non-zero lambda
+    \begin{gather*}
+        \bar{y} = \int^1_0 y_i d_i = w \int^1_0 z_i d_i  = w
+    \end{gather*}
+    \item In the equilibrium:
+    \begin{gather*}
+        G = \int^{1}_0 \mathcal{T}(y_i)d_i = w \int^{1}_0z_i d_i - (1-\tau) w \int^{1}_0z_i^{1-\lambda} d_i = w - (1-\tau)w\int_0^1z_i^{1-\lambda}d_i 
+    \end{gather*}
+    \item We further apply Tauchen's approximation to arrive at the solution
+    \begin{gather*}
+        G \approx w-(1-\tau)w((z_{vec}^{1-\lambda})' * \lambda_z)
+    \end{gather*}
+    \item \(\lambda_z\) is a vector of z-states probabilities
+    \item  Knowing the labor share at 0.6 and government spending to output ratio at 0.2, we arrive at solution that \(G = \frac{1}{3} w\)
+    \begin{gather*}
+        G \approx w-(1-\tau)w((z_{vec}^{1-\lambda})' * \lambda_z) = \frac{1}{3}w
+    \end{gather*}
+    \item Solving for \(\tau\)
+    \begin{gather*}
+        w[\frac{2}{3}-(1-\tau)((z_{vec}^{1-\lambda})' * \lambda_z)]=0;
+        \newline
+        \quad \tau = 1 -\frac{2}{3} \frac{1}{(z_{vec}^{1-\lambda})' * \lambda_z}
+    \end{gather*}
+    \item Based on this approximation, we can find tax rate for different levels of \(\lambda\). For \(\lambda = 0.15\) the corresponding tax rate is approximately 0.3855 (ensuring approximate G/Y at 0.2). 
+    
+    
+\end{itemize}
+
+\section*{Finding \(\beta\) and OPI rationale}
+
+As mentioned by Caroll and Young (2011) changes in progressivity have substantial effects, especially for households with large \(\beta\). They have also found that intertemporal household's behaviour is very sensitive to \(\beta\). Therefore, the final results can largely be dependent on \(\beta\) calibration. We calibrated our model for \(\beta\) looking for solution to Bellman equation when excess demand is (as close to) zero, given all the other parameters and knowing w = 1, r = 0.04 when \(\lambda = 0\). On the other hand, solving Bellman equation-driven Aiyagari general equilibrium (we will need it for \(\lambda = 0.15\) for which we do not know prices) can be computationally costly, therefore we adopted standard OPI methodology. All in all, we tried to balance numerical precision with computational possibility. We have tested various non-linear equation algorithms, but none of them arrived at an excess demand closer to zero than the guess \(\beta\) = 0.9340109 found with trial end error. The resulting excess demand was approx. 0.004672.
+
+
+\section*{Results discussion}
+The increase in tax progressiveness have led to:
+\begin{itemize}
+    \item increase in r \((\approx 0.04 \Longrightarrow \approx 0.046)\)
+    \item decrease in w \((\approx 1.0 \Longrightarrow \approx 0.95)\)
+    \item increase in the tax rate \((\approx 0.33 \Longrightarrow \approx 0.38)\)
+    \item decrease in the capital to output ratio \((\approx 5.0 \Longrightarrow \approx 4.60)\)
+    \item decrease in the Gini coefficient for after-tax labor income \((\approx 0.55 \Longrightarrow \approx 0.48)\)
+    \item increase in the Gini coefficient for assets \((\approx 0.469 \Longrightarrow \approx 0.4789)\)
+\end{itemize}
+\newline
+In the same manner as showed in Carroll \& Young (2011) our results showed that an increase in taxation progressiveness has led to decreased income inequality and increased asset (wealth) inequality. The change in the asset inequality is also visible in the distribution of the assets between economies - when lambda = 0.0, more households possess some assets, as compared to lambda = 0.15. 
+\newline
+\newline
+This result was expected with our intuition on redistributive policies.  Introducing tax progressions should typically flatten the after-tax income distribution by both reducing this income and by discouraging the top earners from engaging in more work activity. Furthermore, progressive taxes can affect individuals' propensity to save. If higher-income individuals face increased taxation, their savings may decline, potentially reducing the overall supply of loanable funds. This contraction in supply could lead to higher interest rates, as shown in our comparison. The increase in the interest rate can be at play when it comes to increasing wealth inequality. Additionally, we present that the capital-to-output ratio decreases. Therefore, on average, there is less capital available per unit of output, which leads to a decline in the marginal productivity of labor (MPL). If MPL decreases, then wages should also decrease. 
+
+\section*{Bibliography}
+
+\begin{itemize}
+\item Aiyagari, S. R. 1994. Uninsured idiosyncratic risk and aggregate saving. The Quarterly Journal of Economics, 109(3), 659-684.
+\item Carroll, D. R. and Young, E. R. 2011. The long run effects of changes in tax progressivity. Journal of Economic Dynamics and Control, 35(9), 1451-1473.
+\item Groningen Growth and Development Centre. 2023. Penn World Table version 10.01.
+\item Holter, H. A., Krueger, D., Stepanchuk, S. 2019. How do tax progressivity and household heterogeneity affect Laffer curves?. Quantitative Economics, 10(4), 1317-1356.
+\end{itemize}
+
+\end{document}
